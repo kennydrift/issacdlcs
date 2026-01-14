@@ -2,580 +2,168 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Desmos | Graphing Calculator</title>
-  <link rel="icon" type="image/x-icon" href="https://www.desmos.com/assets/img/apps/graphing/favicon.ico">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap');
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: 'Noto Sans JP', sans-serif;
+      margin: 0;
       min-height: 100vh;
-      background: url("https://hdwallpaperim.com/wp-content/uploads/2017/09/16/51250-monochrome-manga-stars-748x537.jpg") no-repeat center center fixed;
+      font-family: 'Inter', sans-serif;
+      background: url("wallpaper.jpg") no-repeat center center fixed;
       background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
+      color: #fff;
     }
 
-    /* Dim overlay */
+    /* Dark overlay */
     body::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(10, 10, 15, 0.48);
+      background: rgba(12, 12, 18, 0.55);
       z-index: 0;
     }
 
     .container {
       position: relative;
       z-index: 1;
-      background: rgba(20, 20, 25, 0.28);
+      width: 90%;
+      max-width: 700px;
+      padding: 2.5rem;
+      background: rgba(25, 25, 35, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 2rem 2.5rem;
-      width: 96%;
-      max-width: 1600px;
-      min-height: 92vh;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(5px);
-      display: flex;
-      flex-direction: column;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      text-align: center;
     }
 
     h1 {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-      color: #fff;
-      text-align: center;
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+      font-weight: 600;
     }
 
-    p.description {
-      font-size: 1rem;
+    .subtitle {
+      font-size: 0.95rem;
       color: #ccc;
-      text-align: center;
       margin-bottom: 2rem;
     }
 
-    .game-list {
+    .button-list {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.75rem;
     }
 
-    .search-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.search-bar {
-  width: 500px;
-  max-width: 500px;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 1rem;
-  outline: none;
-  transition: background 0.2s, border 0.2s;
-}
-
-.search-bar::placeholder {
-  color: #ccc;
-}
-
-.search-bar:focus {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-
-    .game-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      color: #fff;
-      transition: background 0.2s;
-    }
-
-    .game-item:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .game-title {
+    .game-btn {
+      width: 100%;
+      padding: 0.8rem 1rem;
       font-size: 1rem;
       font-weight: 500;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .btn {
-      background: rgba(255, 255, 255, 0.12);
-      border: none;
-      padding: 0.35rem 0.8rem;
-      border-radius: 4px;
       color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s;
+      transition: background 0.2s ease, transform 0.1s ease;
     }
 
-    .btn:hover { background: rgba(255, 255, 255, 0.25); }
-
-    .star-btn {
-      font-size: 1.1rem;
-      padding: 0.35rem 0.6rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .game-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
     }
 
-    .starred {
-      color: gold;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+    .game-btn:active {
+      transform: translateY(0);
     }
   </style>
-  <script>
-    function playRandomGame() {
-  const randomIndex = Math.floor(Math.random() * games.length);
-  const randomGame = games[randomIndex];
-  try {
-    if (randomGame.js) {
-      eval(randomGame.js);
-    } else {
-      injectAboutBlank(randomGame.url);
-    }
-    } catch (e) {
-      console.error("Error playing random game:", e);
-    }
-}
-  </script>
 </head>
+
 <body>
+
   <div class="container">
-    <h1> Catalogue:// </h1>
-    <p class="description"> - An expanded catalogue of games that we like - <br><small>Created 9.30.25 - Supplied by <b>λambda</b> <br>Now with the Strikeforce Kitty franchise! <br>(Alongside other notable games such as <b>Balatro</b>, <b>Slime Rancher</b>, <b>Buckshot Roullete</b>,<br> and <b>Sort the Court</b> to make <b>12 new games</b>, with 2 of them being your own suggestions!)</small></p>
-    <div style="align-self:first baseline;" class="search-container"> 
-    <button onclick="playRandomGame()" class="btn" style="margin-right: 8px;">🎲</button>
-    <button onclick="document.location='https://forms.gle/C2mowNHtXe3JYaUL6'" class="btn" style="margin-right: 8px;">📩 Suggestion / Critique</button>
-    
+    <h1>Binding of Issac DLCs</h1>
+    <div class="subtitle">Select a version to launch</div>
 
-  <div style="text-align: center; margin-bottom: 1rem;">
-  
-</div>
+    <div class="button-list">
+      <button
+        class="game-btn"
+        onclick="cloak('https://arcadehubgaming.github.io/cdn7/bindings%20of%20issac/')">
+        Binding of Isaac (Original)
+      </button>
 
-
-  <input type="text" id="searchBar" class="search-bar" placeholder="Search games..." />
-</div>
-
-    <div id="gameList" class="game-list"></div>
+      <button
+        class="game-btn"
+        onclick="cloak('https://archive.org/embed/tboiwotl-v1.666')">
+        Binding of Isaac (Wrath of the Lamb)
+      </button>
+    </div>
   </div>
-  <script>
-    function openDeltaruneLocal() {
-  const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <link id="favicon" rel="shortcut icon" type="image/x-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAIxUExURQC0Hv///wGyHACyHAGzHQGuHLbmvgCpHgCyHQGrHAGmGwGxHACtHAGrGwGqGyG0OCCwNwCjGgCqG0DFVQCkGgGeGQCiGgCbGRGvKQCoGwGhGgCYGAGsGwGjGgGcGQCXGEC8UxGsKTCiQkCzUgGaGAGZGDCoQgGFFQGJFgGXGQCKFgB9FACSGAGSGAGRFwGIFgGAFAB9FAB+EyC8OQCyHQCxHQCvHJDam7/rxnDTgAGyHQGwHACuHACsHL/qxmDIcIDYjr/sxwGxHQGvHf///0DFVu/68RG3KwGuHACrHAGoGwCmG2DGcM/u1AChGgCfGt/14wCtHACqHACnGwClG7/oxnDIfgCcGYDXjgGsHACpHACjGyCsNiCpNgCZGQCwHCC3OAGmGwCkGwCiGmDCcL/mxgGaGQCWGACpG7/pxoDSjQCdGt/y4mC+bwCUGACSFxCvKgCoG5/cqd/z4jCvRQCaGWC/bwCVGHDCfe/48QCjGiCuN8/t1K/guCCoNoDMjO/58TCrRGC8boDJi9/x4kCqUd/043DKf6DaqQCYGYDKjO/48KDWqN/w4iCbMwGLFwCJFnDFfqDXqK/dt6DVqL/jxZDNmSCaNACIFgCGFQCdGQGcGQCXGAGVGJDPmYDHixCUJQCMFgCLFwCHFgCDFQCbGQGXGQCQFwCOFwCMFwCLFgCFFQGCFQCAFQCTGAGNFwCKFwCGFgCEFgCCFQF/FQCPFwCNFwCKFgCEFQCBFQB+FLCzAvgAAAAzdFJOU1/v/v7+/t9f3/7u/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+7/7eYN/+/v7uX0DbKcIAAAABYktHRAH/Ai3eAAAAB3RJTUUH6QoUAQUwMjiWXQAAARtJREFUGNMBEAHv/gAAATMCNDQDNAQ1NTYFNwYHAAg4OQQ0NAQ0Ojs8PQk+PwoAA0BBAjo0QgtDDA0OD0QQEQA0RUZHOjU2SEkSSktMTU5PAAQ0UBM2UT1SSlNUFFVWFVcANEJYOFlSWlNUWxZcRF0XXgBfQ2BGGBlhYmMaT2RlZhtnAFEcaGlqYh1OT2sebG0fbm8AcHFLIHJVRHN0dXZsd3h5eQBNIXp7fH1+f4CBbIKDhIUiAE2Gh3OIfCOJiouMjI2Oj5AATlZ9f3WRRJKTlJWWl5CYmQCamyQlnJ0mnp+goaKYoyekAKVepmdub6eoqaooo6ukrK0AKWdurqeoryqwmLGys620KwAsLS61tqm3L7G4pLkwujEygHdboC5uc+kAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjUtMTAtMjBUMDE6MDU6NDgrMDA6MDB6VGjvAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI1LTEwLTIwVDAxOjA1OjQ4KzAwOjAwCwnQUwAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNS0xMC0yMFQwMTowNTo0OCswMDowMFwc8YwAAAAASUVORK5CYII=" />
-  <base href="https://cdn.jsdelivr.net/gh/genizy/web-port@a6e2b184812dd22c58e6b6a18325083b7a131981/deltarune/">
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="logo-container">
-    <img src="logo.png" alt="Logo" class="logo">
-  </div>
-  
-  <div class="menu">
-    <a href="javascript:loadChapter(1)" class="row"><span class="chapter">Chapter 1</span><span class="title">The Beginning</span><img src="icons/1.png"></a>
-    <a href="javascript:loadChapter(2)" class="row"><span class="chapter">Chapter 2</span><span class="title">A Cyber's World</span><img src="icons/2.png"></a>
-    <a href="javascript:loadChapter(3)" class="row"><span class="chapter">Chapter 3</span><span class="title">Late Night</span><img src="icons/3.png"></a>
-    <a href="javascript:loadChapter(4)" class="row"><span class="chapter">Chapter 4</span><span class="title">Prophecy</span><img src="icons/4.png"></a>
-    <a href="javascript:alert('Chapter 5 coming soon!')" class="disabled-row"><span class="chapter">Chapter 5</span><span class="disabled-title">--</span><img src="icons/0.png"></a>
-    <a href="javascript:alert('Chapter 6 coming soon!')" class="disabled-row"><span class="chapter">Chapter 6</span><span class="disabled-title">--</span><img src="icons/0.png"></a>
-    <a href="javascript:alert('Chapter 7 coming soon!')" class="disabled-row"><span class="chapter">Chapter 7</span><span class="disabled-title">--</span><img src="icons/0.png"></a>
-    <a href="javascript:alert('O.O')" class="row"><span class="chapter"></span><span class="title">I HATE YOU BOG</span><span class="title">-x64bitMango</span><span class="badge"></span></a>
-  </div>
-
-  <audio id="drone" controls loop autoplay hidden>
-    <source src="audios/AUDIO_DRONE.ogg" type="audio/ogg">
-    Your browser does not support the audio element.
-  </audio>
-  <button id="mute">🔇</button>
 
   <script>
-    const audio = document.getElementById('drone');
-    const mute = document.getElementById('mute');
-    let gamestarted = false;
+    function cloak(url) {
+      const w = window.open("about:blank", "_blank");
+      if (!w) return alert("Popup blocked");
 
-    mute.addEventListener('click', () => {
-      if (!gamestarted) {
-        audio.muted = !audio.muted;
-        updateButton();
-      }
-    });
-
-    function updateButton() {
-      if (!gamestarted) {
-        mute.textContent = audio.muted ? '🔊' : '🔇';
-      }
+      w.document.open();
+      w.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Desmos | Graphing Calculator</title>
+          <link rel="icon" href="https://www.desmos.com/assets/img/apps/graphing/favicon.ico">
+          <style>
+            html, body {
+              margin: 0;
+              width: 100%;
+              height: 100%;
+              background: #000;
+              overflow: hidden;
+            }
+            iframe {
+              position: fixed;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              border: none;
+            }
+            .hint {
+              position: fixed;
+              top: 12px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: rgba(0,0,0,0.7);
+              color: white;
+              padding: 8px 14px;
+              border-radius: 6px;
+              font-family: Arial, sans-serif;
+              font-size: 14px;
+              z-index: 9999;
+              pointer-events: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="hint">
+            Right click the game and click "Enter Fullscreen"
+          </div>
+          <iframe src="${url}" allowfullscreen></iframe>
+        </body>
+        </html>
+      `);
+      w.document.close();
     }
-
-    updateButton();
-
-    function loadChapter(chapter) {
-      fetch(\`chapter\${chapter}/index.html\`).then(res => res.text()).then(html => {
-        gamestarted = true;
-        document.documentElement.innerHTML = html;
-        document.documentElement.querySelectorAll('script').forEach(oldScript => {
-          const newScript = document.createElement('script');
-          if (oldScript.src) newScript.src = oldScript.src;
-          else newScript.textContent = oldScript.textContent;
-          document.body.appendChild(newScript);
-        });
-      });
-    }
-
-    const menumoveaudio = new Audio('audios/snd_menumove.mp3');
-    const menuselectaudio = new Audio('audios/snd_select.mp3');
-
-    document.querySelectorAll('.row').forEach(row => {
-      row.addEventListener('mouseenter', () => {
-        if (!gamestarted) menumoveaudio.play();
-      });
-      row.addEventListener('click', () => {
-        if (!gamestarted) menuselectaudio.play();
-      });
-    });
-
-    let selectedChapter = null;
-    document.addEventListener('keydown', e => {
-      if (!gamestarted) {
-        const rows = document.querySelectorAll('.row');
-        if (e.key === 'ArrowUp') {
-          if (selectedChapter === null) selectedChapter = 0;
-          else selectedChapter = (selectedChapter - 1 + rows.length) % rows.length;
-        } else if (e.key === 'ArrowDown') {
-          if (selectedChapter === null) selectedChapter = 0;
-          else selectedChapter = (selectedChapter + 1) % rows.length;
-        } else if (e.key === 'Enter' && selectedChapter !== null) {
-          window.location.href = rows[selectedChapter].href;
-          menuselectaudio.play();
-        }
-        rows.forEach(r => r.classList.remove('selected'));
-        if (selectedChapter !== null) rows[selectedChapter].classList.add('selected');
-      }
-    });
-
-    document.title = "Desmos | Graphing Calculator";
-  <\/script>
-</body>
-</html>
-`;
-
-  const tab = window.open("about:blank", "_blank");
-  const link = tab.document.createElement("link");
-  link.rel = "icon";
-  link.href = "https://www.desmos.com/assets/img/apps/graphing/favicon.ico"; // e.g. "https://www.desmos.com/favicon.ico"
-  tab.document.head.appendChild(link);
-  
-  if (!tab) return alert("Popup blocked!");
-  tab.document.open();
-  tab.document.write(html);
-  tab.document.close();
- 
-
-}
-  
-  
-  function fetchFromCDN(source, favicon = "https://www.desmos.com/assets/img/apps/graphing/favicon.ico") {
-  fetch(`${source}`)
-    .then(response => response.text())
-    .then(text => {
-
-      const newWin = window.open("about:blank", "_blank");
-      
-      if (newWin) {
-        newWin.document.open();
-        newWin.document.write(text);
-        newWin.document.close();
-        const link = newWin.document.createElement("link");
-        link.rel = "icon";
-        link.href = favicon;
-        newWin.document.head.appendChild(link);
-
-        }
-      });
-
-
-      alert("Hosted right at home... Enjoy!");
-
-  }
-  
   </script>
 
-
-  <script>
-    // --------------------------
-    // about:blank injector
-    // --------------------------
-    function injectAboutBlank(url = null, favicon = "https://www.desmos.com/assets/img/apps/graphing/favicon.ico") {
-      const newTab = window.open("about:blank", "_blank");
-      if (!newTab) return alert("Popup blocked.");
-
-      if (!newTab.document.head) {
-        newTab.document.write("<head></head><body></body>");
-        newTab.document.close();
-      }
-
-      const welcomeText = newTab.document.createTextNode("Welcome, chump");
-      newTab.document.body.appendChild(welcomeText);
-
-      const blackness = newTab.document.createElement("style");
-      blackness.innerHTML = "body { margin: 0; background: rgb(20, 20, 20); overflow: hidden; }";
-      newTab.document.head.appendChild(blackness);
-
-      if (favicon) {
-        const link = newTab.document.createElement("link");
-        link.rel = "icon";
-        link.href = favicon;
-        newTab.document.head.appendChild(link);
-      }
-
-      if (url) {
-        const iframe = newTab.document.createElement("iframe");
-        iframe.src = url;
-        iframe.style.position = "absolute";
-        iframe.style.top = "0";
-        iframe.style.left = "0";
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.style.border = "none";
-        newTab.document.body.appendChild(iframe);
-      }
-
-      newTab.document.title = "Desmos | Graphing Calculator";
-    }
-
-    
-
-
-    // --------------------------
-    // Games array
-    // --------------------------
-const games = [
-  { name: "Bad Time Simulator", url: "https://script.google.com/macros/s/AKfycbyDlu_jOseVJ1vs-727rRdeIgvVzKkUFT9FwBsdsaLmMKt46TmNtM_jYrDJYvPQb0Y_Lw/exec" },
-  { name: "Balatro", url: "https://waguri.jalcorn.net/games/balatro/index.html" },
-  { name: "Basket Bros (To the one guy that asked for this)", url: "https://basketbros-unblocked.github.io/a7/basket-bros/" },
-  // { name: "Bad Piggies (Full Sandbox, Just a little chinese spyware involved)", url: "https://kdata1.com/2025/03/BadPiggiesOnline2018/" },
-  { name: "BitLife", url: "https://arcadehubgaming.github.io/cdn/bitlife/index.html" },
-  
-  { name: "Blackjack", url: "https://waguri.jalcorn.net/gamefile/BlackJack.html" },
-  // { name: "Bonk.io", url: "https://bonk.io/" },
-  { name: "Block Blast", url: "https://arcadehubgaming.github.io/cdn12/BlockBlast-main" },
-  { name: "Buckshot Roullete", url: "https://waguri.jalcorn.net/games/buckshot/index.html" },
-  { name: "Cell Machine", url: "https://arcadehubgaming.github.io/cdn/cell-machine/index.html" },
-  { name: "Cookie Clicker (NOT A:B Appended)", url: "https://clickedforthecooks.netlify.app/", js:"alert('This game is NOT about:blank appended, meaning it WILL show up in your search history.'); document.location='https://clickedforthecooks.netlify.app/'" },
-  { name: "DDLC (original)", url: "https://alarmedcheese85.github.io/DDLC1/" },
-  { name: "Deltarune (Chapters 1-4)", url: "I HATE ALL OF YOU THIS TOOK WAY TOO LONG TO MAKE IT'S OCTOBER NINETEENTH AND MY AUDITION IS IN 2 DAYS AND I PRACTICALLY JUST WASTED AN ENTIRE AUDITION DAY JUST TRYING TO GET THIS FUCKASS WEB PORT OF DELTARUNE WORKING", js: "openDeltaruneLocal()" },
-  { name: "Eaglercraft (Minecraft Javascript Runtime 1.12.2 ALPHA)", url: "https://arcadehubgaming.github.io/cdn18/eaglercraft-1.12.2-wasm/" },
-  { name: "Eaglerforge (Minecraft MODDED 1.8.8)", url: "https://arcadehubgaming.github.io/cdn18/eaglerforge/" },
-  { name: "Eaglercraft (Minecraft Astra Client 1.5)", url: "https://arcadehubgaming.github.io/cdn18/astra/" },
-  { name: "Flappy Chairman", url: "https://rightonaether.github.io/Flappy-Chairman/" },
-  { name: "Friday Night Funkin'", url: "https://arcadehubgaming.github.io/cdn2/fridaynightfunkin/index.html" },
-  { name: "Friday Night Funkin' (Miku)", url: "https://arcadehubgaming.github.io/cdn8/Miku" },
-  { name: "Friday Night Funkin' (Michael Jackson's Smooth Criminal over 'Roses')", url: "https://arcadehubgaming.github.io/cdn8/rosecriminal" },
-  { name: "Friday Night Funkin' (Star Catcher)", url: "https://arcadehubgaming.github.io/cdn8/starcatcher" },
-  { name: "Friday Night Funkin' (Salty's Sunday Night)", url: "https://arcadehubgaming.github.io/cdn8/saltyssundaynight" },
-  { name: "Friday Night Funkin' (vs. Hex)", url: "https://arcadehubgaming.github.io/cdn8/hex" },
-  { name: "Friday Night Funkin' (X event)", url: "https://arcadehubgaming.github.io/cdn14/papaswingeria/" },
-  { name: "Friday Night Funkin' (ann)", url: "https://arcadehubgaming.github.io/cdn8/ann" },
-  /*
-  { name: "Friday Night Funkin' (week 3 remastered)", url: "https://fnf.kdata1.com/2024/week-3-remaster-vs-pico/1/" },
-  { name: "Friday Night Funkin' (sonic.exe)", url: "https://fnf.kdata1.com/sonic.exe/3/" },
-  { name: "Friday Night Funkin' (sonic.exe but vs rewrite instead)", url: "https://fnf.kdata1.com/rewrite-sonic-exe/1.2/" },
-  { name: "Friday Night Funkin' (sonic.exe triple trouble encore)", url: "https://fnf.kdata1.com/triple-trouble-encore-sonic-exe/1/" },
-  { name: "Friday Night Funkin' (sonic.exe final triple trouble encore)", url: "https://fnf.kdata1.com/triple-trouble-encore-sonic-exe/1/" },
-  { name: "Friday Night Funkin' (silly billy)", url: "https://fnf.kdata1.com/2024/silly-billy-vs-yourself/1/" },
-  */
-  
-  { name: "FUNKADELIX ' (FNF with lyrics)", url: "https://fnf.kdata1.com/2024/funkadelix-fnf-with-lyrics/60/" },
-  { name: "Happy Room", url: "https://htmlxm.github.io/h7/happy-room/" },
-  { name: "OSU!", url: "https://arcadehubgaming.github.io/cdn5/cdn5/osu!/index.html" },
-  { name: "OSU! Mania (Web Version)", url: "https://webosumania.com/" },
-  { name: "Papa's Burgeria", url: "https://arcadehubgaming.github.io/cdn5/cdn5/papasburgeria/index.html" },
-  { name: "Papa's Freezeria", url: "https://arcadehubgaming.github.io/cdn5/cdn5/papaspizzaria/index.html" },
-  { name: "Papa's Scooperia", url: "https://arcadehubgaming.github.io/cdn3/cdn3/scooperia/index.html" },
-  { name: "Papa's Wingeria", url: "https://arcadehubgaming.github.io/cdn14/papaswingeria/" },
-  { name: "Parappa the Rapper", url: "https://www.retrogames.cc/embed/41581-parappa-the-rapper.html" },
-  { name: "Plants vs. Zombies", url: "https://arcadehubgaming.github.io/cdn11/PlantsVsZombies-main" },
-  // { name: "Please, Don't Touch Anything", url: "https://www.gamesflow.com/jeux/html5/9010613/" },
-  { name: "Pokémon Emerald", url: "https://script.google.com/macros/s/AKfycbydeGJlDAWwZCE5PY08zOOmx37ItizsHHLSxDEwAEOsGgT7n9rqb4V1Anelns4sezU6/exec" },
-  { name: "Pokémon Fire Red`", url: "https://script.google.com/macros/s/AKfycbzEbzXxS4zazELSeJtXyLaPrJhPMEJsh2lACeG_0Ky7xTL0ewG0m1iJeU2d1K0OmeGOug/exec" },
-  { name: "Pokémon Leaf Green", url: "https://script.google.com/macros/s/AKfycbxWYXzXN3TRwxELxgrTkjmE5hyqPMgzdNn6clWSzVcU-m0m9MDdHHb-VP-VDnz06vNe/exec" },
-  { name: "Pokémon Ruby", url: "https://script.google.com/macros/s/AKfycbypOitjGD19RPkCYQ8vgJzFfmtMtnl3naBwSw9OhpqtalZs0k3Pri3nL7X76qUwdV9GGQ/exec" },
-  { name: "Pokémon Sapphire", url: "https://script.google.com/macros/s/AKfycbyeS8uFFwRdwOSD8Nx9TgRvHjajV_wF-Hhcb1yylBWSderXu0DEwCWC639oGWZThrjP/exec" },
-  { name: "Slime Rancher (Web Port)", url: "https://slime-rancherweb.netlify.app/" },
-  { name: "Stick War", url: "https://arcadehubgaming.github.io/cdn4/cdn4/stickwar/index.html" },
-  { name: "Street Fighter 2", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2/index.html')" },
-  { name: "Street Fighter 2 - Turbo", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2-turbo/index.html')" },
-  { name: "Street Fighter 3 - 3rd Strike (Alpha)", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/3-alpha/index.html')" },
-  { name: "Strikeforce Kitty 1", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://raw.githubusercontent.com/ResonanceRenaissance/swfCDN/refs/heads/main/strikeforce-kitty/1/index.html')" },
-  { name: "Strikeforce Kitty 2", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://raw.githubusercontent.com/ResonanceRenaissance/swfCDN/refs/heads/main/strikeforce-kitty/2/index.html')" },
-  { name: "Strikeforce Kitty: Last Stand", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://raw.githubusercontent.com/ResonanceRenaissance/swfCDN/refs/heads/main/strikeforce-kitty/last-stand/index.html')" },
-  { name: "Strikeforce Kitty: League", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://raw.githubusercontent.com/ResonanceRenaissance/swfCDN/refs/heads/main/strikeforce-kitty/league/index.html')" },
-  { name: "Sort the Court", url: "https://script.google.com/macros/s/AKfycbzzDc0nSAmDzkY5U2rHlH8_ljr-7z0Klo8pcuw7SpkOoiDVEagec-BS4jQxyT0j22TWeg/exec" },
-  { name: "Subway Surfers", url: "https://arcadehubgaming.github.io/cdn4/cdn4/subway-surfers/index.html" },
-  { name: "Super Smash Flash 2", url: "https://www.twoplayergames.org/gameframe/super-smash-flash-2?embed=1" },
-  { name: "Swords and Souls (PERSONAL FAVORITE)", url: "https://script.google.com/macros/s/AKfycbwpk3_eQ-NLDyEjcqWn-txMpuRmeF2pgck1awpz9tkMNL79tQ_hYiqC3hKdWhXXXK1f1g/exec" },
-  
-  { name: "Tank Trouble 2 (A Personal Favorite)", url: "https://arcadehubgaming.github.io/cdn4/cdn4/tank-trouble-2/index.html" },
-  { name: "The Binding of Isaac", url: "https://arcadehubgaming.github.io/cdn7/bindings of issac/" },
-  // { name: "Taiko no Tatsujin Web (Aether's Personal Fav)", url: "https://cjdgrevival.com" },
-  { name: "Wolfenstein 3D", url: "https://arcadehubgaming.github.io/cdn6/cdn6/wolf3d/index.html" },
-  
-];
-
-
-    // --------------------------
-    // Favorites handling
-    // --------------------------
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-
-    function renderGames() {
-      const gameList = document.getElementById("gameList");
-      gameList.innerHTML = "";
-
-      // Sort: favorites on top
-      const sortedGames = [...games].sort((a, b) => {
-        const aFav = favorites.includes(a.url);
-        const bFav = favorites.includes(b.url);
-        return aFav === bFav ? 0 : aFav ? -1 : 1;
-      });
-
-      sortedGames.forEach(game => {
-        const item = document.createElement("div");
-        item.className = "game-item";
-
-        const title = document.createElement("span");
-        title.className = "game-title";
-        title.textContent = game.name;
-
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        const playBtn = document.createElement("button");
-        playBtn.className = "btn";
-        playBtn.textContent = "Play";
-        playBtn.onclick = () => {
-        try {
-          if (game.js) {
-            console.log(game.js)
-            eval(game.js);
-          } else {
-            injectAboutBlank(game.url);
-          }
-        } catch (e) {
-          console.error("Error setting up play button for", game.name, e);
-        }
-      };
-
-      const searchBar = document.getElementById("searchBar");
-
-
-
-searchBar.addEventListener("input", () => {
-  const query = searchBar.value.toLowerCase();
-  const filteredGames = games.filter(game => game.name.toLowerCase().includes(query));
-  
-  const gameList = document.getElementById("gameList");
-  gameList.innerHTML = "";
-
-  filteredGames.forEach(game => {
-    const item = document.createElement("div");
-    item.className = "game-item";
-
-    const title = document.createElement("span");
-    title.className = "game-title";
-    title.textContent = game.name;
-
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    const playBtn = document.createElement("button");
-    playBtn.className = "btn";
-    playBtn.textContent = "Play";
-    playBtn.onclick = () => {
-      try {
-        if (game.js) {
-          eval(game.js);
-        } else {
-          injectAboutBlank(game.url);
-        }
-      } catch (e) {
-        console.error("Error setting up play button for", game.name, e);
-      }
-    };
-
-    const starBtn = document.createElement("button");
-    starBtn.className = "btn star-btn";
-    starBtn.innerHTML = favorites.includes(game.url) ? "★" : "☆";
-    if (favorites.includes(game.url)) starBtn.classList.add("starred");
-    starBtn.onclick = () => toggleFavorite(game.url);
-
-    actions.appendChild(playBtn);
-    actions.appendChild(starBtn);
-
-    item.appendChild(title);
-    item.appendChild(actions);
-    gameList.appendChild(item);
-  });
-});
-
-
-
-        const starBtn = document.createElement("button");
-        starBtn.className = "btn star-btn";
-        starBtn.innerHTML = favorites.includes(game.url) ? "★" : "☆";
-        if (favorites.includes(game.url)) starBtn.classList.add("starred");
-
-        starBtn.onclick = () => toggleFavorite(game.url);
-
-        actions.appendChild(playBtn);
-        actions.appendChild(starBtn);
-
-        item.appendChild(title);
-        item.appendChild(actions);
-        gameList.appendChild(item);
-      });
-    }
-
-    function toggleFavorite(url) {
-      if (favorites.includes(url)) {
-        favorites = favorites.filter(f => f !== url);
-      } else {
-        favorites.push(url);
-      }
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      renderGames();
-    }
-
-
-
-    renderGames();
-  </script>
 </body>
 </html>
